@@ -137,3 +137,9 @@ Body : raw
 ## Thoughts
 
 could improve more and try to implement sequelize if got the time and use swagger for easy readable api.
+
+## Future
+
+- [ ] Swagger
+- [ ] Sequelize
+- [ ] More code readability
