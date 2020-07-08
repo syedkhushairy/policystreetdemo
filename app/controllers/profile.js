@@ -1,25 +1,5 @@
 const Profile = require('../models/profile');
 
-// exports.get = (req, res) => {
-//   const user = req.user;
-//   Profile.get(user.id, (err, data) => {
-//     if (err) {
-//       console.log(err);
-//       res.status(500).send({
-//         message: err.message || 'Unexpected Error',
-//       });
-//     } else {
-//       if (data === undefined) {
-//         res.status(404).send({
-//           message: 'Profile not found',
-//         });
-//       } else {
-//         res.send(data);
-//       }
-//     }
-//   });
-// };
-
 function get(req, res) {
   const user = req.user;
   Profile.get(user.id, (err, data) => {
@@ -79,4 +59,22 @@ function update(req, res) {
     }
   });
 }
-module.exports = { get, create, update };
+
+function deleteProfile(req, res) {
+  const profile = new Profile({
+    id: parseInt(req.body.id, 10),
+    user_id: req.user.id,
+  });
+  Profile.delete(profile, (err, data) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send({
+        message: err.message || 'Unexpected Error',
+      });
+    } else {
+      res.send(data);
+    }
+  });
+}
+
+module.exports = { get, create, update, deleteProfile };

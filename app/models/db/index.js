@@ -1,6 +1,6 @@
 const mysql = require('mysql2');
-const config = require("config");
-const dbConfig = config.get("dev");
+const config = require('config');
+const dbConfig = config.get('dev');
 
 // Create a connection to the database
 const connection = mysql.createConnection({

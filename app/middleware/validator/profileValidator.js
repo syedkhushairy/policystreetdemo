@@ -34,3 +34,19 @@ exports.validateUpdateProfile = [
     next();
   },
 ];
+
+exports.validateDeleteProfile = [
+  check('id')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('ID is required!')
+    .isNumeric()
+    .withMessage('ID should be only number')
+    .bail(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
+    next();
+  },
+];
