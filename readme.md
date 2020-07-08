@@ -143,3 +143,4 @@ could improve more and try to implement sequelize if got the time and use swagge
 - [ ] Swagger
 - [ ] Sequelize
 - [ ] More code readability
+- [ ] Might change express-validator to yup
