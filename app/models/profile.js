@@ -12,7 +12,7 @@ const Profile = function (profile) {
 
 Profile.get = (user, result) => {
   sql.query(
-    'SELECT profile_id, first_name, last_name, email from users join profiles ON profiles.id = profile_id where users.id = ?',
+    'SELECT profile_id as id, first_name, last_name, email from users join profiles ON profiles.id = profile_id where users.id = ?',
     [user],
     (err, res) => {
       if (err) {
@@ -26,6 +26,22 @@ Profile.get = (user, result) => {
     },
   );
 };
+
+function get(user) {
+  const result = sql
+    .promise()
+    .query(
+      'SELECT profile_id as id, first_name, last_name, email from users join profiles ON profiles.id = profile_id where users.id = ?',
+      [user],
+    )
+    .then(([rows, fields]) => {
+      return rows[0];
+    })
+    .catch((err) => {
+      return err;
+    });
+  return result;
+}
 
 Profile.create = (profile, result) => {
   const getProfile = Profile.get;
@@ -110,11 +126,46 @@ Profile.update = async (profile, result) => {
           );
         } else {
           console.log('Profile id is wrong');
-          result({ message: 'Profile id is wron' }, null);
+          result({ message: 'Profile id is wrong' }, null);
         }
       }
     }
   });
+};
+
+Profile.delete = async (profile, result) => {
+  const getProfile = await get(profile.user_id);
+  if (getProfile === undefined) {
+    console.log('No Profile yet');
+    result({ message: 'User dont have any profile yet' }, null);
+    return;
+  }
+  if (getProfile.id === profile.id) {
+    sql
+      .promise()
+      .query('DELETE FROM `profiles` WHERE `id` = ?', [getProfile.id])
+      .then(([rows, fields]) => {
+        console.log('Profile has been deleted');
+      })
+      .catch((err) => {
+        console.log(err);
+        return err;
+      });
+    sql
+      .promise()
+      .query('UPDATE users SET `profile_id` = 0 where `id` = ?', [profile.user_id])
+      .then(([rows, fields]) => {
+        console.log('User has been updated');
+        result(null, { msg: 'Profile has been deleted' });
+      })
+      .catch((err) => {
+        console.log(err);
+        result(err, null);
+      });
+  } else {
+    console.log('Profile id is wrong');
+    result({ message: 'Profile id is wrong' }, null);
+  }
 };
 
 module.exports = Profile;
