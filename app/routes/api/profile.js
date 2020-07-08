@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const profile = require('../../controllers/profile');
+const { get, create, update } = require('../../controllers/profile');
+
 const { auth } = require('../../middleware/auth/auth');
 const {
   validateProfile,
   validateUpdateProfile,
 } = require('../../middleware/validator/profileValidator');
 
-// router.get('/', profile.index);
-router.get('/', auth, profile.get);
-router.post('/', auth, validateProfile, profile.create);
-router.put('/', auth, validateUpdateProfile, profile.update);
+router.get('/', auth, get);
+router.post('/', auth, validateProfile, create);
+router.put('/', auth, validateUpdateProfile, update);
 
 module.exports.router = router;

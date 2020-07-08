@@ -1,12 +1,12 @@
 const User = require('../models/users');
 
-exports.index = (req, res) => {
+function index(req, res) {
   res.send({
-    message: 'Users api',
+    message: 'Users2 api',
   });
-};
+}
 
-exports.create = async (req, res) => {
+function create(req, res) {
   const user = new User({
     login: req.body.login,
     password: req.body.password,
@@ -23,4 +23,6 @@ exports.create = async (req, res) => {
       res.send(data);
     }
   });
-};
+}
+
+module.exports = { index, create };

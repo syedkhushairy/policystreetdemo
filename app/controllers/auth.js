@@ -1,12 +1,12 @@
 const Auth = require('../models/auth');
 
-exports.index = (req, res) => {
+function index(req, res) {
   res.send({
     message: 'Auth api',
   });
-};
+}
 
-exports.login = async (req, res) => {
+function login(req, res) {
   const auth = new Auth({
     login: req.body.login,
     password: req.body.password,
@@ -22,8 +22,6 @@ exports.login = async (req, res) => {
       res.send(data);
     }
   });
+}
 
-  // res.send({
-  //     message: 'Try to login?',
-  // })
-};
+module.exports = { login, index };
