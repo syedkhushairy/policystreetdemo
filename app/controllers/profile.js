@@ -42,7 +42,7 @@ exports.create = (req, res) => {
 
 exports.update = (req, res) => {
   const profile = new Profile({
-    id: parseInt(req.params.id, 10),
+    id: parseInt(req.body.id, 10),
     user_id: req.user.id,
     first_name: req.body.first_name,
     last_name: req.body.last_name,

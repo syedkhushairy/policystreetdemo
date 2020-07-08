@@ -72,14 +72,12 @@ Profile.create = (profile, result) => {
 
 Profile.update = async (profile, result) => {
   const getProfile = Profile.get;
-  console.log(profile);
   getProfile(profile.user_id, (err, data) => {
     if (err) {
       res.status(500).send({
         message: err.message || 'Unexpected Error',
       });
     } else {
-      console.log(data);
       if (data === undefined) {
         result({ message: 'User dont have any profile yet' }, null);
       } else {
