@@ -11,25 +11,15 @@ const connection = mysql.createConnection({
   multipleStatements: true,
 });
 
-// open the MySQL connection
-connection.connect((error) => {
-  if (error) throw error;
-  console.log('Successfully connected to the database.');
-  connection.query(
-    `CREATE TABLE profiles (
+const create_table_profiles = `CREATE TABLE profiles (
 	id INT NOT NULL AUTO_INCREMENT,
 	first_name VARCHAR(50) NOT NULL DEFAULT '',
 	last_name VARCHAR(50) NOT NULL DEFAULT '',
 	email VARCHAR(100) NOT NULL DEFAULT '',
 	PRIMARY KEY (id)
-)`,
-    function (err, result) {
-      if (err) throw err;
-      console.log('Table profiles created');
-    },
-  );
-  connection.query(
-    `CREATE TABLE users (
+)`;
+
+const create_table_users = `CREATE TABLE users (
 	id INT NOT NULL AUTO_INCREMENT,
 	login VARCHAR(50) NOT NULL,
 	password VARCHAR(255) NOT NULL,
@@ -41,10 +31,22 @@ connection.connect((error) => {
 	PRIMARY KEY (id),
 	UNIQUE INDEX login (login),
 	INDEX profile_id (profile_id),
-	INDEX companies_id (companies_id))`,
-    function (err, result) {
-      if (err) throw err;
-      console.log('Table users created');
-    },
+	INDEX companies_id (companies_id))`;
+
+// open the MySQL connection
+connection.connect((error) => {
+  if (error) throw error;
+  console.log('Successfully connected to the database.');
+  connection.query(create_table_profiles, function (err, result) {
+    if (err) throw err;
+    console.log('Table profiles created');
+    connection.end();
+  },
+  );
+  connection.query(create_table_users, function (err, result) {
+    if (err) throw err;
+    console.log('Table users created');
+    connection.end();
+  },
   );
 });

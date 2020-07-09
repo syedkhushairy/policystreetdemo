@@ -17,5 +17,6 @@ connection.connect((error) => {
   connection.query('CREATE DATABASE policystreet', function (err, result) {
     if (err) throw err;
     console.log('Database created');
+    connection.end();
   });
 });
