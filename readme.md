@@ -26,31 +26,17 @@ change any values that you want in config/default.json
 
 ## Init Database & Table
 
+Create database:
+
 ```
 npm run init-database
 ```
 
-after seeing
-
-```
-Database created
-```
-
-exit the script by pressing Ctrl+C
-and run
+Create table:
 
 ```
 npm run init-table
 ```
-
-after seeing
-
-```
-Table Profiles created
-Table users created
-```
-
-exit and everything is done
 
 ## Executing the program
 
@@ -130,9 +116,9 @@ Body : raw
     "last_name": "testing4",
     "email": "testing4@test.com"
 }
-
-
 ```
+
+Postman: https://www.getpostman.com/collections/adfba22664a581adfd15
 
 ## Thoughts
 
