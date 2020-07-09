@@ -3,7 +3,7 @@
   "dev": {
     "HOST": "localhost",
     "USER": "root",
-    "PASSWORD": "Qwer[]123$",
+    "PASSWORD": "",
     "DB": "policystreet"
   }
 }
