@@ -1,9 +1,0 @@
-{
-  "jwtSecret": "policysecret",
-  "dev": {
-    "HOST": "localhost",
-    "USER": "root",
-    "PASSWORD": "Qwer[]123$",
-    "DB": "policystreet"
-  }
-}
