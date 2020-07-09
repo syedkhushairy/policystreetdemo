@@ -39,3 +39,22 @@ Auth.login = (auth, result) => {
 };
 
 module.exports = Auth;
+
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      Auth:
+ *        type: object
+ *        required:
+ *          - login
+ *          - password
+ *        properties:
+ *          login:
+ *            type: string
+ *          password:
+ *            type: string
+ *        example:
+ *           login: SuperAdmin
+ *           password: 123456
+ */

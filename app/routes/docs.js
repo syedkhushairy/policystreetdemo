@@ -24,7 +24,12 @@ const options = {
       },
     ],
   },
-  apis: ['./app/models/users.js', './app/routes/api/users.js'],
+  apis: [
+    './app/models/users.js',
+    './app/models/auth.js',
+    './app/routes/api/users.js',
+    './app/routes/api/auth.js',
+  ],
 };
 const specs = swaggerJsdoc(options);
 
