@@ -77,4 +77,19 @@ User.updateProfileID = async (profile, result) => {
   );
 };
 
-module.exports = User;
+async function updateProfileID(profile) {
+  const result = await sql
+    .promise()
+    .query('UPDATE users SET `profile_id` = ? where `id` = ?', [profile.id, profile.user_id])
+    .then(([rows]) => {
+      return { result: rows.affectedRows === 1 };
+    })
+    .catch((err) => {
+      console.log(err);
+      return { result: false, err };
+    });
+
+  return result;
+}
+
+module.exports = { User, updateProfileID };

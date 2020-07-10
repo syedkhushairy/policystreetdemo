@@ -1,26 +1,23 @@
-const Profile = require('../models/profile');
+const { Profile, get: getProfile, create: createProfile } = require('../models/profile');
 
-function get(req, res) {
+async function get(req, res) {
   const user = req.user;
-  Profile.get(user.id, (err, data) => {
-    if (err) {
-      console.log(err);
-      res.status(500).send({
-        message: err.message || 'Unexpected Error',
-      });
-    } else {
-      if (data === undefined) {
-        res.status(404).send({
-          message: 'Profile not found',
-        });
-      } else {
-        res.send(data);
-      }
-    }
-  });
+  const data = await getProfile(user.id);
+  if (data.result && data.data !== undefined) {
+    res.status(200).send(data.data);
+    return;
+  } else if (data.data === undefined) {
+    res.status(404).send({
+      message: 'Profile not found',
+    });
+  } else {
+    res.status(500).send({
+      message: data.err || 'Unexpected Error',
+    });
+  }
 }
 
-function create(req, res) {
+async function create(req, res) {
   const profile = new Profile({
     user_id: req.user.id,
     first_name: req.body.first_name,
@@ -28,16 +25,15 @@ function create(req, res) {
     email: req.body.email,
   });
 
-  Profile.create(profile, (err, data) => {
-    if (err) {
-      console.log(err);
-      res.status(500).send({
-        message: err.message || 'Unexpected Error',
-      });
-    } else {
-      res.send(data);
-    }
-  });
+  const data = await createProfile(profile);
+
+  if (data.insert && data.update.result) {
+    res.status(200).send({ msg: 'Profile has been created' });
+  } else {
+    res.status(500).send({
+      message: data.message || 'Unexpected Error',
+    });
+  }
 }
 
 function update(req, res) {
