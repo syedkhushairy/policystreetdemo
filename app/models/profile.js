@@ -97,7 +97,7 @@ Profile.update = async (profile, result) => {
       if (data === undefined) {
         result({ message: 'User dont have any profile yet' }, null);
       } else {
-        if (data.profile_id === profile.id) {
+        if (data.id === profile.id) {
           const first_name =
             profile.first_name !== data.first_name && profile.first_name !== undefined
               ? profile.first_name
@@ -125,6 +125,7 @@ Profile.update = async (profile, result) => {
             },
           );
         } else {
+          console.log(data, profile);
           console.log('Profile id is wrong');
           result({ message: 'Profile id is wrong' }, null);
         }

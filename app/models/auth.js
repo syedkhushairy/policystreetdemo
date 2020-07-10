@@ -18,6 +18,7 @@ Auth.login = (auth, result) => {
         message: err.message || 'Unexpected Error',
       });
     } else {
+      console.log(auth);
       const isMatch = await bcrypt.compare(auth.password, data.password);
       if (!isMatch) {
         result({ errors: [{ msg: 'Invalid Credentials' }] }, null);
@@ -39,22 +40,3 @@ Auth.login = (auth, result) => {
 };
 
 module.exports = Auth;
-
-/**
- * @swagger
- *  components:
- *    schemas:
- *      Auth:
- *        type: object
- *        required:
- *          - login
- *          - password
- *        properties:
- *          login:
- *            type: string
- *          password:
- *            type: string
- *        example:
- *           login: SuperAdmin
- *           password: 123456
- */

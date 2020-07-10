@@ -1,0 +1,248 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Swagger Policy Street Demo",
+    "description": "User management system",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3500/api/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "user",
+      "description": "All about user"
+    },
+    {
+      "name": "auth",
+      "description": "Access to Policiy Street"
+    },
+    {
+      "name": "profile",
+      "description": "All about user profile"
+    }
+  ],
+  "paths": {
+    "/user": {
+      "post": {
+        "tags": ["user"],
+        "summary": "Create a new user",
+        "operationId": "createUser",
+        "requestBody": {
+          "description": "User object that needed to add to the system",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Any of the parameters is missing",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/auth": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Login in a user",
+        "description": "Login in user and gives a token for authorization",
+        "operationId": "userLogin",
+        "requestBody": {
+          "description": "Login object that needed to login into the system",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Auth"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Auth"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Login",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/profile": {
+      "get": {
+        "tags": ["profile"],
+        "summary": "Find profile by header",
+        "description": "Get user profile details",
+        "operationId": "findByAuthorization",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": null,
+                "$ref": "#/components/schemas/Profile"
+              }
+            }
+          },
+          "400": {
+            "description": "User hasn't created a profile",
+            "content": {}
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "post": {
+        "tags": ["profile"],
+        "summary": "Create User profile",
+        "description": "Get User information and create his profile",
+        "operationId": "createProfileByAuthorization",
+        "requestBody": {
+          "description": "User Profile",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Profile"
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "400": {
+            "description": "Invalid token / some empty value",
+            "content": {}
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "put": {
+        "tags": ["profile"],
+        "summary": "Updates User profile",
+        "operationId": "updateUserProfile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["id"],
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "description": "User Profile id"
+                  },
+                  "first_name": {
+                    "type": "string",
+                    "description": "Updated user first name"
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "description": "Updated user last name"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Updated user email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "405": {
+            "description": "Invalid input",
+            "content": {}
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "login": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "user_type": {
+            "type": "string",
+            "description": "pet status in the store",
+            "enum": ["superadmin", "admin", "user"]
+          }
+        }
+      },
+      "Auth": {
+        "required": ["login", "password"],
+        "type": "object",
+        "properties": {
+          "login": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "Profile": {
+        "required": ["first_name", "last_name", "email"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "x-auth-token",
+        "in": "header"
+      }
+    }
+  }
+}
