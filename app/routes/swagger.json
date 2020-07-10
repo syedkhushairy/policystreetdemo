@@ -121,16 +121,28 @@
         "description": "Get User information and create his profile",
         "operationId": "createProfileByAuthorization",
         "requestBody": {
-          "description": "User Profile",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Profile"
+                "required": ["first_name", "last_name", "email"],
+                "properties": {
+                  "first_name": {
+                    "type": "string",
+                    "description": "Updated user first name"
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "description": "Updated user last name"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Updated user email"
+                  }
+                }
               }
             }
           }
         },
-
         "responses": {
           "400": {
             "description": "Invalid token / some empty value",
@@ -177,6 +189,47 @@
         "responses": {
           "405": {
             "description": "Invalid input",
+            "content": {}
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["profile"],
+        "summary": "Delete profile with token and id",
+        "description": "Delete ",
+        "operationId": "deleteProfileWithTokenAndId",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["id"],
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "description": "User Profile id"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": null,
+                "$ref": "#/components/schemas/Profile"
+              }
+            }
+          },
+          "400": {
+            "description": "User hasn't created a profile",
             "content": {}
           }
         },
