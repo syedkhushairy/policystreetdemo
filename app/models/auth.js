@@ -18,6 +18,7 @@ Auth.login = (auth, result) => {
         message: err.message || 'Unexpected Error',
       });
     } else {
+      console.log(auth);
       const isMatch = await bcrypt.compare(auth.password, data.password);
       if (!isMatch) {
         result({ errors: [{ msg: 'Invalid Credentials' }] }, null);

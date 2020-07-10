@@ -18,13 +18,50 @@ const options = {
         email: 'Info@SmartBear.com',
       },
     },
+    components: {
+      securitySchemes: {
+        api_key: {
+          type: 'apiKey',
+          name: 'api_key',
+          in: 'header',
+        },
+        petstore_auth: {
+          type: 'oauth2',
+          flows: {
+            implicit: {
+              authorizationUrl: 'http://example.org/api/oauth/dialog',
+              scopes: {
+                'write:pets': 'modify pets in your account',
+                'read:pets': 'read your pets',
+              },
+            },
+          },
+        },
+        bearer: {
+          type: 'http',
+          scheme: 'bearer',
+        },
+        JWT: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
     servers: [
       {
         url: 'http://localhost:3500/api/v1',
       },
     ],
   },
-  apis: ['./app/models/users.js', './app/routes/api/users.js'],
+  apis: [
+    './app/models/users.js',
+    './app/models/auth.js',
+    './app/models/profile.js',
+    './app/routes/api/users.js',
+    './app/routes/api/auth.js',
+    './app/routes/api/profile.js',
+  ],
 };
 const specs = swaggerJsdoc(options);
 

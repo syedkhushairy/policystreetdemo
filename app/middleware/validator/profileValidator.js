@@ -27,7 +27,14 @@ exports.validateUpdateProfile = [
     .isNumeric()
     .withMessage('ID should be only number')
     .bail(),
-  check('email').trim().isEmail().withMessage('Please enter valid email!').bail(),
+  check('email')
+    .isEmpty()
+    .not()
+    .bail()
+    .trim()
+    .isEmail()
+    .withMessage('Please enter valid email!')
+    .bail(),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
