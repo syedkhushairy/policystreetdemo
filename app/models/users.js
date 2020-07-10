@@ -75,3 +75,29 @@ User.updateProfileID = async (profile, result) => {
 };
 
 module.exports = User;
+
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      User:
+ *        type: object
+ *        required:
+ *          - login
+ *          - password
+ *          - user_type
+ *        properties:
+ *          login:
+ *            type: string
+ *            description: Login going to be unique.
+ *          password:
+ *            type: string
+ *            description: Use for login.
+ *          user_type:
+ *            type: string
+ *            description: value going to be either superadmin/admin/user
+ *        example:
+ *           login: SuperAdmin
+ *           password: 123456
+ *           user_type: superadmin
+ */
