@@ -39,8 +39,11 @@ User.findLogin = (email, result) => {
         console.log('error: ', err);
         result(err, null);
       } else {
-        console.log('User Found');
-        result(null, res[0]);
+        if (res.length === 0) {
+          result({ message: 'Wrong email/password.' }, null);
+        } else {
+          result(null, res[0]);
+        }
       }
     },
   );
