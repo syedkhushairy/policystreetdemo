@@ -77,7 +77,6 @@ async function deleteUserProfile(req, res) {
   if (result.noProfile || result.wrongProfileID) {
     res.status(404).send({ msg: result.message });
   } else if (result.success) {
-    console.log('here');
     res.status(200).send({ msg: result.message });
   } else {
     res.status(500).send({ msg: result.err.message || 'Unexpected Error' });

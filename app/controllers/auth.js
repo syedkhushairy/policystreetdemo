@@ -11,15 +11,12 @@ async function login(req, res) {
     login: req.body.login,
     password: req.body.password,
   });
-  const result = await userLogin(auth);
-
-  if (result.success) {
-    console.log(result);
-    res.status(200).send(result.token);
+  const { success, message, token } = await userLogin(auth);
+  if (success) {
+    res.status(200).send(token);
   } else {
-    console.log(result.err);
     res.status(500).send({
-      message: result.message || 'Unexpected Error',
+      message: message || 'Unexpected Error',
     });
   }
 }

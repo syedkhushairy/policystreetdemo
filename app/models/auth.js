@@ -32,6 +32,8 @@ async function login(auth) {
 
       return { success: true, token: result };
     }
+  } else {
+    return { success: false, message: 'Invalid Credentials' };
   }
 }
 

@@ -16,12 +16,12 @@
   ],
   "tags": [
     {
-      "name": "user",
-      "description": "All about user"
-    },
-    {
       "name": "auth",
       "description": "Access to Policiy Street"
+    },
+    {
+      "name": "users",
+      "description": "All about user"
     },
     {
       "name": "profile",
@@ -29,30 +29,6 @@
     }
   ],
   "paths": {
-    "/user": {
-      "post": {
-        "tags": ["user"],
-        "summary": "Create a new user",
-        "operationId": "createUser",
-        "requestBody": {
-          "description": "User object that needed to add to the system",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/User"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "400": {
-            "description": "Any of the parameters is missing",
-            "content": {}
-          }
-        }
-      }
-    },
     "/auth": {
       "post": {
         "tags": ["auth"],
@@ -83,6 +59,44 @@
           },
           "400": {
             "description": "Invalid Login",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Create a new user",
+        "operationId": "createUser",
+        "requestBody": {
+          "description": "User object that needed to add to the system",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Any of the parameters is missing",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
             "content": {}
           }
         }
@@ -244,6 +258,7 @@
   "components": {
     "schemas": {
       "User": {
+        "required": ["login", "password", "user_type"],
         "type": "object",
         "properties": {
           "login": {
