@@ -1,26 +1,29 @@
-const Profile = require('../models/profile');
+const {
+  Profile,
+  get: getProfile,
+  create: createProfile,
+  update: updateProfile,
+  deleteProfile,
+} = require('../models/profile');
 
-function get(req, res) {
+async function get(req, res) {
   const user = req.user;
-  Profile.get(user.id, (err, data) => {
-    if (err) {
-      console.log(err);
-      res.status(500).send({
-        message: err.message || 'Unexpected Error',
-      });
-    } else {
-      if (data === undefined) {
-        res.status(404).send({
-          message: 'Profile not found',
-        });
-      } else {
-        res.send(data);
-      }
-    }
-  });
+  const { success, data, err } = await getProfile(user.id);
+  if (success && data !== undefined) {
+    res.status(200).send(data);
+    return;
+  } else if (data === undefined) {
+    res.status(404).send({
+      message: 'Profile not found',
+    });
+  } else {
+    res.status(500).send({
+      message: err.message || 'Unexpected Error',
+    });
+  }
 }
 
-function create(req, res) {
+async function create(req, res) {
   const profile = new Profile({
     user_id: req.user.id,
     first_name: req.body.first_name,
@@ -28,53 +31,57 @@ function create(req, res) {
     email: req.body.email,
   });
 
-  Profile.create(profile, (err, data) => {
-    if (err) {
-      console.log(err);
-      res.status(500).send({
-        message: err.message || 'Unexpected Error',
-      });
-    } else {
-      res.send(data);
+  const { update, insert, error } = await createProfile(profile);
+
+  if (insert && update.success) {
+    res.status(200).send({ msg: 'Profile has been created' });
+  } else {
+    let errMsg;
+    if (error && !insert) {
+      errMsg = message || error.message;
+    } else if (!update.result) {
+      errMsg = update.err.message;
     }
-  });
+    res.status(500).send({
+      message: errMsg || 'Unexpected Error',
+    });
+  }
 }
 
-function update(req, res) {
+async function update(req, res) {
   const profile = new Profile({
     id: parseInt(req.body.id, 10),
     user_id: req.user.id,
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
+    first_name: req.body.first_name ? req.body.first_name.trim() : undefined,
+    last_name: req.body.last_name ? req.body.last_name.trim() : undefined,
     email: req.body.email,
   });
-  Profile.update(profile, (err, data) => {
-    if (err) {
-      console.log(err);
-      res.status(500).send({
-        message: err.message || 'Unexpected Error',
-      });
-    } else {
-      res.send(data);
-    }
-  });
+
+  const { noProfile, wrongProfileID, message, unexpectedError, err } = await updateProfile(profile);
+
+  if (unexpectedError) {
+    res.status(500).send({ message: err.message });
+  } else if (noProfile || wrongProfileID) {
+    res.status(404).send({ message: message });
+  } else {
+    res.status(200).send({ message: message });
+  }
 }
 
-function deleteProfile(req, res) {
+async function deleteUserProfile(req, res) {
   const profile = new Profile({
     id: parseInt(req.body.id, 10),
     user_id: req.user.id,
   });
-  Profile.delete(profile, (err, data) => {
-    if (err) {
-      console.log(err);
-      res.status(500).send({
-        message: err.message || 'Unexpected Error',
-      });
-    } else {
-      res.send(data);
-    }
-  });
+  const { noProfile, wrongProfileID, success, message } = await deleteProfile(profile);
+
+  if (noProfile || wrongProfileID) {
+    res.status(404).send({ message: message });
+  } else if (success) {
+    res.status(200).send({ message: message });
+  } else {
+    res.status(500).send({ message: message || 'Unexpected Error' });
+  }
 }
 
-module.exports = { get, create, update, deleteProfile };
+module.exports = { get, create, update, deleteUserProfile };
