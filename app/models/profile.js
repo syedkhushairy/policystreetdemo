@@ -18,11 +18,11 @@ async function get(user) {
       [user],
     )
     .then(([rows]) => {
-      return { result: true, data: rows[0] };
+      return { success: true, data: rows[0] };
     })
     .catch((err) => {
       console.log(err);
-      return { result: false, err };
+      return { success: false, err };
     });
   return result;
 }
@@ -44,11 +44,11 @@ async function create(profile) {
     .then(async ([rows]) => {
       profile.id = rows.insertId;
       const result = await updateProfileID(profile);
-      return { update: result, insert: true };
+      return { update: result, success: true };
     })
     .catch((err) => {
       console.log(err);
-      return { result: false, err };
+      return { error: true, err };
     });
 
   return result;
@@ -83,7 +83,7 @@ async function update(profile) {
       .then(([rows]) => {
         console.log('Profile has been updated');
         return {
-          result: rows.affectedRows === 1,
+          success: rows.affectedRows === 1,
           message: 'Profile has been updated',
         };
       })
@@ -110,8 +110,8 @@ async function deleteProfile(profile) {
 
     result.update = await sql
       .promise()
-      .query('UPDATE users SET `profile_id` = 0 where `id` = ?', [profile.user_id])
-      .then(([rows, fields]) => {
+      .query('UPDATE userss SET `profile_id` = 0 where `id` = ?', [profile.user_id])
+      .then(([rows]) => {
         return {
           result: rows.affectedRows === 1,
           message: 'Profile has been deleted',
@@ -119,16 +119,14 @@ async function deleteProfile(profile) {
       })
       .catch((err) => {
         console.log(err);
-        return { result: true, err };
+        return { result: false, err };
       });
     //kalau x nk keep data can keep this part.
     //atas dah soft delete
     result.delete = await sql
       .promise()
-      .query('DELETE FROM `profiles` WHERE `id` = ?', [getProfile.data.id])
-      .then(([rows, fields]) => {
-        console.log(rows);
-        console.log(fields);
+      .query('DELETE FROM `profiless` WHERE `id` = ?', [getProfile.data.id])
+      .then(([rows]) => {
         return {
           result: rows.affectedRows === 1,
           message: 'Profile has been deleted',
@@ -136,9 +134,8 @@ async function deleteProfile(profile) {
       })
       .catch((err) => {
         console.log(err);
-        return { result: true, err };
+        return { result: false, err };
       });
-    console.log(result);
     if (result.update.result && result.delete.result) {
       return { message: 'Profile has been deleted', success: true };
     } else if (!result.update.result) {
@@ -157,40 +154,5 @@ function sendProfileNotFound(getProfile) {
   console.log('No Profile yet');
   return { message: errMessage, noProfile: true };
 }
-
-Profile.deletes = async (profile, result) => {
-  const getProfile = await get(profile.user_id);
-  if (getProfile === undefined) {
-    console.log('No Profile yet');
-    result({ message: 'User dont have any profile yet' }, null);
-    return;
-  }
-  if (getProfile.id === profile.id) {
-    sql
-      .promise()
-      .query('DELETE FROM `profiles` WHERE `id` = ?', [getProfile.id])
-      .then(([rows, fields]) => {
-        console.log('Profile has been deleted');
-      })
-      .catch((err) => {
-        console.log(err);
-        return err;
-      });
-    sql
-      .promise()
-      .query('UPDATE users SET `profile_id` = 0 where `id` = ?', [profile.user_id])
-      .then(([rows, fields]) => {
-        console.log('User has been updated');
-        result(null, { msg: 'Profile has been deleted' });
-      })
-      .catch((err) => {
-        console.log(err);
-        result(err, null);
-      });
-  } else {
-    console.log('Profile id is wrong');
-    result({ message: 'Profile id is wrong' }, null);
-  }
-};
 
 module.exports = { Profile, create, get, update, deleteProfile };

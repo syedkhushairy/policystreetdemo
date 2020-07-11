@@ -29,41 +29,6 @@
     }
   ],
   "paths": {
-    "/auth": {
-      "post": {
-        "tags": ["auth"],
-        "summary": "Login in a user",
-        "description": "Login in user and gives a token for authorization",
-        "operationId": "userLogin",
-        "requestBody": {
-          "description": "Login object that needed to login into the system",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Auth"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Auth"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid Login",
-            "content": {}
-          }
-        }
-      }
-    },
     "/users": {
       "post": {
         "tags": ["users"],
@@ -97,6 +62,41 @@
           },
           "500": {
             "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/auth": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Login in a user",
+        "description": "Login in user and gives a token for authorization",
+        "operationId": "userLogin",
+        "requestBody": {
+          "description": "Login object that needed to login into the system",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Auth"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Auth"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Login",
             "content": {}
           }
         }

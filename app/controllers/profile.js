@@ -8,17 +8,17 @@ const {
 
 async function get(req, res) {
   const user = req.user;
-  const data = await getProfile(user.id);
-  if (data.result && data.data !== undefined) {
-    res.status(200).send(data.data);
+  const { success, data, err } = await getProfile(user.id);
+  if (success && data !== undefined) {
+    res.status(200).send(data);
     return;
-  } else if (data.data === undefined) {
+  } else if (data === undefined) {
     res.status(404).send({
       message: 'Profile not found',
     });
   } else {
     res.status(500).send({
-      message: data.err || 'Unexpected Error',
+      message: err.message || 'Unexpected Error',
     });
   }
 }
@@ -31,16 +31,16 @@ async function create(req, res) {
     email: req.body.email,
   });
 
-  const data = await createProfile(profile);
+  const { update, insert, error } = await createProfile(profile);
 
-  if (data.insert && data.update.result) {
+  if (insert && update.success) {
     res.status(200).send({ msg: 'Profile has been created' });
   } else {
     let errMsg;
-    if (!data.result && !data.insert) {
-      errMsg = data.message || data.err.message;
-    } else if (!data.update.result) {
-      errMsg = data.update.err.message;
+    if (error && !insert) {
+      errMsg = message || error.message;
+    } else if (!update.result) {
+      errMsg = update.err.message;
     }
     res.status(500).send({
       message: errMsg || 'Unexpected Error',
@@ -57,13 +57,14 @@ async function update(req, res) {
     email: req.body.email,
   });
 
-  const result = await updateProfile(profile);
-  if (result.unexpectedError) {
-    res.status(500).send({ msg: result.err.message });
-  } else if (result.noProfile || result.wrongProfileID) {
-    res.status(404).send({ msg: result.message });
+  const { noProfile, wrongProfileID, message, unexpectedError, err } = await updateProfile(profile);
+
+  if (unexpectedError) {
+    res.status(500).send({ message: err.message });
+  } else if (noProfile || wrongProfileID) {
+    res.status(404).send({ message: message });
   } else {
-    res.status(200).send({ msg: result.message });
+    res.status(200).send({ message: message });
   }
 }
 
@@ -72,14 +73,14 @@ async function deleteUserProfile(req, res) {
     id: parseInt(req.body.id, 10),
     user_id: req.user.id,
   });
-  const result = await deleteProfile(profile);
+  const { noProfile, wrongProfileID, success, message } = await deleteProfile(profile);
 
-  if (result.noProfile || result.wrongProfileID) {
-    res.status(404).send({ msg: result.message });
-  } else if (result.success) {
-    res.status(200).send({ msg: result.message });
+  if (noProfile || wrongProfileID) {
+    res.status(404).send({ message: message });
+  } else if (success) {
+    res.status(200).send({ message: message });
   } else {
-    res.status(500).send({ msg: result.err.message || 'Unexpected Error' });
+    res.status(500).send({ message: message || 'Unexpected Error' });
   }
 }
 
