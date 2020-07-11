@@ -30,8 +30,14 @@ async function create(req, res) {
   if (data.insert && data.update.result) {
     res.status(200).send({ msg: 'Profile has been created' });
   } else {
+    let errMsg;
+    if (!data.result && !data.insert) {
+      errMsg = data.message || data.err.message;
+    } else if (!data.update.result) {
+      errMsg = data.update.err.message;
+    }
     res.status(500).send({
-      message: data.message || 'Unexpected Error',
+      message: errMsg || 'Unexpected Error',
     });
   }
 }

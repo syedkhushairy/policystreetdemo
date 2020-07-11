@@ -50,51 +50,9 @@ async function create(profile) {
       console.log(err);
       return { result: false, err };
     });
+
   return result;
 }
-
-Profile.create = (profile, result) => {
-  const getProfile = Profile.get;
-
-  getProfile(profile.user_id, (err, data) => {
-    if (err) {
-      res.status(500).send({
-        message: err.message || 'Unexpected Error',
-      });
-    } else {
-      if (data !== undefined) {
-        result({ message: 'Already has a profile use UPDATE(PUT)' }, null);
-      }
-    }
-  });
-
-  sql.query(
-    'INSERT INTO profiles SET ?',
-    {
-      first_name: profile.first_name,
-      last_name: profile.last_name,
-      email: profile.email,
-    },
-    (err, res) => {
-      if (err) {
-        console.log('error: ', err);
-        result(err, null);
-      } else {
-        console.log('Profile has Been Created: ');
-        profile.id = res.insertId;
-        User.updateProfileID(profile, (err, data) => {
-          if (err) {
-            console.log('error: ', err);
-            result(err, null);
-          } else {
-            console.log('User profile id has been created');
-            result(null, data);
-          }
-        });
-      }
-    },
-  );
-};
 
 Profile.update = async (profile, result) => {
   const getProfile = Profile.get;
