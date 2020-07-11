@@ -49,6 +49,21 @@ User.findLogin = (email, result) => {
   );
 };
 
+async function findLogin(email) {
+  const result = sql
+    .promise()
+    .query('SELECT id,login, password, user_type from users where `login` = ?', [email])
+    .then(([rows]) => {
+      console.log(rows);
+      return { result: rows.length === 1, data: rows[0] };
+    })
+    .catch((err) => {
+      console.log(err);
+      return { result: false, err };
+    });
+  return result;
+}
+
 User.getProfileID = (login, result) => {
   sql.query('SELECT id, profile_id from users where `login` = ?', [login], (err, res) => {
     if (err) {
@@ -92,4 +107,4 @@ async function updateProfileID(profile) {
   return result;
 }
 
-module.exports = { User, updateProfileID };
+module.exports = { updateProfileID, findLogin };

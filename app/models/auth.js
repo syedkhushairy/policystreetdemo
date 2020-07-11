@@ -2,37 +2,37 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 
-const User = require('./users');
-// constructor
-const Auth = function (auth) {
+const { findLogin } = require('./users');
+
+function Auth(auth) {
   this.login = auth.login;
   this.password = auth.password;
-};
+}
 
-Auth.login = (auth, result) => {
-  User.findLogin(auth.login, async (err, data) => {
-    if (err) {
-      console.log(err);
-      result(err, null);
+async function login(auth) {
+  const { result, data } = await findLogin(auth.login);
+  if (result) {
+    const isMatch = await bcrypt.compare(auth.password, data.password);
+    if (!isMatch) {
+      return { success: false, message: 'Invalid Credentials' };
     } else {
-      const isMatch = await bcrypt.compare(auth.password, data.password);
-      if (!isMatch) {
-        result({ errors: [{ msg: 'Invalid Credentials' }] }, null);
-      } else {
-        const payload = {
-          user: {
-            id: data.id,
-            type: data.user_type,
-          },
-        };
-        jwt.sign(payload, config.get('jwtSecret'), { expiresIn: 36000 }, (err, token) => {
-          if (err) throw err;
-          console.log(token);
-          result(null, { token });
-        });
+      const payload = {
+        user: {
+          id: data.id,
+          type: data.user_type,
+        },
+      };
+      let result;
+      try {
+        result = await jwt.sign(payload, config.get('jwtSecret'), { expiresIn: 36000 });
+      } catch (err) {
+        console.log(err);
+        return { success: false, err };
       }
-    }
-  });
-};
 
-module.exports = Auth;
+      return { success: true, result };
+    }
+  }
+}
+
+module.exports = { Auth, login };
