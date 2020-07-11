@@ -1,5 +1,5 @@
 const sql = require('./db');
-const User = require('./users');
+const { User, updateProfileID } = require('./users');
 
 // constructor
 const Profile = function (profile) {
@@ -10,35 +10,45 @@ const Profile = function (profile) {
   this.email = profile.email;
 };
 
-Profile.get = (user, result) => {
-  sql.query(
-    'SELECT profile_id as id, first_name, last_name, email from users join profiles ON profiles.id = profile_id where users.id = ?',
-    [user],
-    (err, res) => {
-      if (err) {
-        console.log('here');
-        console.log('error: ', err);
-        result(err, null);
-      } else {
-        console.log('User Found');
-        result(null, res[0]);
-      }
-    },
-  );
-};
-
-function get(user) {
-  const result = sql
+async function get(user) {
+  const result = await sql
     .promise()
     .query(
       'SELECT profile_id as id, first_name, last_name, email from users join profiles ON profiles.id = profile_id where users.id = ?',
       [user],
     )
-    .then(([rows, fields]) => {
-      return rows[0];
+    .then(([rows]) => {
+      return { result: true, data: rows[0] };
     })
     .catch((err) => {
-      return err;
+      console.log(err);
+      return { result: false, err };
+    });
+  return result;
+}
+
+async function create(profile) {
+  const data = await get(profile.user_id);
+
+  if (data.data !== undefined) {
+    return { result: false, message: 'Already has a profile use UPDATE(PUT)' };
+  }
+
+  const result = await sql
+    .promise()
+    .query('INSERT INTO profiles SET ?', {
+      first_name: profile.first_name,
+      last_name: profile.last_name,
+      email: profile.email,
+    })
+    .then(async ([rows]) => {
+      profile.id = rows.insertId;
+      const result = await updateProfileID(profile);
+      return { update: result, insert: true };
+    })
+    .catch((err) => {
+      console.log(err);
+      return { result: false, err };
     });
   return result;
 }
@@ -97,7 +107,7 @@ Profile.update = async (profile, result) => {
       if (data === undefined) {
         result({ message: 'User dont have any profile yet' }, null);
       } else {
-        if (data.profile_id === profile.id) {
+        if (data.id === profile.id) {
           const first_name =
             profile.first_name !== data.first_name && profile.first_name !== undefined
               ? profile.first_name
@@ -125,6 +135,7 @@ Profile.update = async (profile, result) => {
             },
           );
         } else {
+          console.log(data, profile);
           console.log('Profile id is wrong');
           result({ message: 'Profile id is wrong' }, null);
         }
@@ -168,4 +179,4 @@ Profile.delete = async (profile, result) => {
   }
 };
 
-module.exports = Profile;
+module.exports = { Profile, create, get };

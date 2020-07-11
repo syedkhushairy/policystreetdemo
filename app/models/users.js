@@ -39,8 +39,11 @@ User.findLogin = (email, result) => {
         console.log('error: ', err);
         result(err, null);
       } else {
-        console.log('User Found');
-        result(null, res[0]);
+        if (res.length === 0) {
+          result({ message: 'Wrong email/password.' }, null);
+        } else {
+          result(null, res[0]);
+        }
       }
     },
   );
@@ -74,30 +77,19 @@ User.updateProfileID = async (profile, result) => {
   );
 };
 
-module.exports = User;
+async function updateProfileID(profile) {
+  const result = await sql
+    .promise()
+    .query('UPDATE users SET `profile_id` = ? where `id` = ?', [profile.id, profile.user_id])
+    .then(([rows]) => {
+      return { result: rows.affectedRows === 1 };
+    })
+    .catch((err) => {
+      console.log(err);
+      return { result: false, err };
+    });
 
-/**
- * @swagger
- *  components:
- *    schemas:
- *      User:
- *        type: object
- *        required:
- *          - login
- *          - password
- *          - user_type
- *        properties:
- *          login:
- *            type: string
- *            description: Login going to be unique.
- *          password:
- *            type: string
- *            description: Use for login.
- *          user_type:
- *            type: string
- *            description: value going to be either superadmin/admin/user
- *        example:
- *           login: SuperAdmin
- *           password: 123456
- *           user_type: superadmin
- */
+  return result;
+}
+
+module.exports = { User, updateProfileID };

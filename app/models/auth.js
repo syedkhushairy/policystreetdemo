@@ -14,9 +14,7 @@ Auth.login = (auth, result) => {
   User.findLogin(auth.login, async (err, data) => {
     if (err) {
       console.log(err);
-      res.status(500).send({
-        message: err.message || 'Unexpected Error',
-      });
+      result(err, null);
     } else {
       const isMatch = await bcrypt.compare(auth.password, data.password);
       if (!isMatch) {
