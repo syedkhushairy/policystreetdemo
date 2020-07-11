@@ -54,6 +54,52 @@ async function create(profile) {
   return result;
 }
 
+async function update(profile) {
+  const getProfile = await get(profile.user_id);
+  if (getProfile.data === undefined || !getProfile.result) {
+    const errMessage = !getProfile.result
+      ? getProfile.err.message
+      : 'You dont have any profiles yet';
+    console.log('No Profile yet');
+    return { message: errMessage, noProfile: true };
+  }
+
+  if (getProfile.data.id === profile.id) {
+    const data = getProfile.data;
+    console.log(data);
+    const first_name =
+      profile.first_name !== data.first_name && profile.first_name.trim().length > 0
+        ? profile.first_name
+        : data.first_name;
+    const last_name =
+      profile.last_name !== data.last_name && profile.last_name.trim().length !== undefined
+        ? profile.last_name
+        : data.last_name;
+    const email =
+      profile.email !== data.email && profile.email !== undefined ? profile.email : data.email;
+    const result = await sql
+      .promise()
+      .query('UPDATE profiles SET `first_name` = ?, `last_name` = ?, `email`= ? where `id` = ?', [
+        first_name,
+        last_name,
+        email,
+        data.id,
+      ])
+      .then(([rows]) => {
+        console.log('Profile has been updated');
+        return { result: rows.affectedRows === 1, message: 'Profile has been updated' };
+      })
+      .catch((err) => {
+        console.log(err);
+        return { unexpectedError: true, err };
+      });
+    return result;
+  } else {
+    console.log('Profile id is wrong');
+    return { message: 'Profile id is wrong', wrongProfileID: true };
+  }
+}
+
 Profile.update = async (profile, result) => {
   const getProfile = Profile.get;
   getProfile(profile.user_id, (err, data) => {
@@ -137,4 +183,4 @@ Profile.delete = async (profile, result) => {
   }
 };
 
-module.exports = { Profile, create, get };
+module.exports = { Profile, create, get, update };

@@ -1,4 +1,9 @@
-const { Profile, get: getProfile, create: createProfile } = require('../models/profile');
+const {
+  Profile,
+  get: getProfile,
+  create: createProfile,
+  update: updateProfile,
+} = require('../models/profile');
 
 async function get(req, res) {
   const user = req.user;
@@ -42,24 +47,23 @@ async function create(req, res) {
   }
 }
 
-function update(req, res) {
+async function update(req, res) {
   const profile = new Profile({
     id: parseInt(req.body.id, 10),
     user_id: req.user.id,
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
+    first_name: req.body.first_name.trim(),
+    last_name: req.body.last_name.trim(),
     email: req.body.email,
   });
-  Profile.update(profile, (err, data) => {
-    if (err) {
-      console.log(err);
-      res.status(500).send({
-        message: err.message || 'Unexpected Error',
-      });
-    } else {
-      res.send(data);
-    }
-  });
+
+  const result = await updateProfile(profile);
+  if (result.unexpectedError) {
+    res.status(500).send({ msg: result.err.message });
+  } else if (result.noProfile) {
+    res.status(404).send({ msg: result.message });
+  } else {
+    res.status(200).send({ msg: result.message });
+  }
 }
 
 function deleteProfile(req, res) {
