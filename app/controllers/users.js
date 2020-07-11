@@ -14,9 +14,8 @@ async function create(req, res) {
     user_type: req.body.user_type,
   });
 
-  const { success, err, data } = await createUser(user);
-  console.log(success);
-  console.log(err);
+  const { success, error } = await createUser(user);
+
   if (success) {
     res.status(200).send({ message: 'Successsfully register user' });
   } else {
@@ -24,16 +23,6 @@ async function create(req, res) {
       message: err.message || 'Unexpected Error',
     });
   }
-  // User.create(user, (err, data) => {
-  //   if (err) {
-  //     console.log(err);
-  //     res.status(500).send({
-  //       message: err.message || 'Unexpected Error',
-  //     });
-  //   } else {
-  //     res.send(data);
-  //   }
-  // });
 }
 
 module.exports = { index, create };

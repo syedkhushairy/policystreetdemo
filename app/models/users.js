@@ -21,11 +21,11 @@ async function create(user) {
     .query('INSERT INTO users SET ?', users)
     .then(([rows]) => {
       console.log(rows);
-      return { success: rows.affectedRows === 1, data: rows[0] };
+      return { success: rows.affectedRows === 1 };
     })
-    .catch((err) => {
+    .catch((error) => {
       console.log(err);
-      return { success: false, err };
+      return { success: false, error };
     });
   return result;
 }

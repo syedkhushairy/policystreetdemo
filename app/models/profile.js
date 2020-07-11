@@ -99,13 +99,13 @@ async function update(profile) {
 }
 
 async function deleteProfile(profile) {
-  const getProfile = await get(profile.user_id);
+  const { data, result } = await get(profile.user_id);
 
-  if (getProfile.data === undefined || !getProfile.result) {
+  if (data === undefined || !result) {
     return sendProfileNotFound(getProfile);
   }
 
-  if (getProfile.data.id === profile.id) {
+  if (data.id === profile.id) {
     let result = {};
 
     result.update = await sql
@@ -128,20 +128,20 @@ async function deleteProfile(profile) {
       .query('DELETE FROM `profiless` WHERE `id` = ?', [getProfile.data.id])
       .then(([rows]) => {
         return {
-          result: rows.affectedRows === 1,
+          success: rows.affectedRows === 1,
           message: 'Profile has been deleted',
         };
       })
       .catch((err) => {
         console.log(err);
-        return { result: false, err };
+        return { success: false, err };
       });
-    if (result.update.result && result.delete.result) {
+    if (result.update.success && result.delete.success) {
       return { message: 'Profile has been deleted', success: true };
-    } else if (!result.update.result) {
-      return { message: result.update.err.message, success: result.update.result };
+    } else if (!result.update.success) {
+      return { message: result.update.err.message, success: result.update.success };
     } else {
-      return { message: result.delete.err.message, success: result.delete.result };
+      return { message: result.delete.err.message, success: result.delete.success };
     }
   } else {
     console.log('Profile id is wrong');
