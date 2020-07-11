@@ -3,6 +3,7 @@ const {
   get: getProfile,
   create: createProfile,
   update: updateProfile,
+  deleteProfile,
 } = require('../models/profile');
 
 async function get(req, res) {
@@ -51,36 +52,46 @@ async function update(req, res) {
   const profile = new Profile({
     id: parseInt(req.body.id, 10),
     user_id: req.user.id,
-    first_name: req.body.first_name.trim(),
-    last_name: req.body.last_name.trim(),
+    first_name: req.body.first_name ? req.body.first_name.trim() : undefined,
+    last_name: req.body.last_name ? req.body.last_name.trim() : undefined,
     email: req.body.email,
   });
 
   const result = await updateProfile(profile);
   if (result.unexpectedError) {
     res.status(500).send({ msg: result.err.message });
-  } else if (result.noProfile) {
+  } else if (result.noProfile || result.wrongProfileID) {
     res.status(404).send({ msg: result.message });
   } else {
     res.status(200).send({ msg: result.message });
   }
 }
 
-function deleteProfile(req, res) {
+async function deleteUserProfile(req, res) {
   const profile = new Profile({
     id: parseInt(req.body.id, 10),
     user_id: req.user.id,
   });
-  Profile.delete(profile, (err, data) => {
-    if (err) {
-      console.log(err);
-      res.status(500).send({
-        message: err.message || 'Unexpected Error',
-      });
-    } else {
-      res.send(data);
-    }
-  });
+  const result = await deleteProfile(profile);
+  console.log(result);
+  // await Profile.delete(profile, (err, data) => {
+  //   if (err) {
+  //     console.log(err);
+  //     res.status(500).send({
+  //       message: err.message || 'Unexpected Error',
+  //     });
+  //   } else {
+  //     res.send(data);
+  //   }
+  // });
+  if (result.noProfile || result.wrongProfileID) {
+    res.status(404).send({ msg: result.message });
+  } else if (result.success) {
+    console.log('here');
+    res.status(200).send({ msg: result.message });
+  } else {
+    res.status(500).send({ msg: result.err.message || 'Unexpected Error' });
+  }
 }
 
-module.exports = { get, create, update, deleteProfile };
+module.exports = { get, create, update, deleteUserProfile };
