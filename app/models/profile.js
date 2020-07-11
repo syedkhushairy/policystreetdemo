@@ -2,14 +2,13 @@ const sql = require('./db');
 const { User, updateProfileID } = require('./users');
 const e = require('express');
 
-// constructor
-const Profile = function (profile) {
+function Profile(profile) {
   this.user_id = profile.user_id;
   this.id = profile.id;
   this.first_name = profile.first_name;
   this.last_name = profile.last_name;
   this.email = profile.email;
-};
+}
 
 async function get(user) {
   const result = await sql

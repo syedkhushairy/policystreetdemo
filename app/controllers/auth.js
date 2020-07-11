@@ -14,6 +14,7 @@ async function login(req, res) {
   const result = await userLogin(auth);
 
   if (result.success) {
+    console.log(result);
     res.status(200).send(result.token);
   } else {
     console.log(result.err);

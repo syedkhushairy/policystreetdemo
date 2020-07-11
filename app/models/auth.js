@@ -30,7 +30,7 @@ async function login(auth) {
         return { success: false, err };
       }
 
-      return { success: true, result };
+      return { success: true, token: result };
     }
   }
 }
