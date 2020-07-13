@@ -1,7 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
 const app = express();
 const api = require('./app/routes/index').router;
+const api2 = require('./app2/routes/index');
+
+// view engine setup
+app.set('views', path.join(__dirname + '/app2/', 'views'));
+app.set('view engine', 'jade');
 
 // parse requests of content-type: application/json
 app.use(bodyParser.json());
@@ -16,6 +22,9 @@ app.get('/:id', (req, res) => {
 
 //get all routes
 app.use('/api/v1', api);
+
+// USING SEQUELIZE
+app.use('/api/v2', api2);
 
 // set port, listen for requests
 app.listen(3500, () => {
