@@ -120,6 +120,23 @@ Body : raw
 
 Postman: https://www.getpostman.com/collections/adfba22664a581adfd15
 
+### Sequelize commands
+
+Generally,
+
+```
+$ npx sequelize db:migrate        # Run pending migrations.
+$ npx sequelize db:migrate:undo   # Revert the last migration run.
+$ npx sequelize help              # Display this help text.
+$ npx sequelize init              # Initializes the project.
+$ npx sequelize migration:create  # Generates a new migration file.
+$ npx sequelize version           # Prints the version number.
+```
+
+*Don't use `npx` if installed globally (`npm i -g sequelize`).*
+
+RTFM: https://sequelize.org/master/index.html
+
 ## Thoughts
 
 could improve more and try to implement sequelize if got the time and use swagger for easy readable api.
